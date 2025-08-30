@@ -1,24 +1,68 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Portfolio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <a href="./0/index.html">Project 0</a>
-    <br>
-    <a href="./1/index.html">Project 1</a>
-    <br>
-    <a href="./2/index.html">Project 2</a>
-    <br>
-    <a href="./3/index.html">Project 3</a>
-    <br>
-    <a href="./4/index.html">Project 4</a>
-</body>
+<html> 
+	<div class="container">
+  		<img src="" alt="TODO: Add 180 Image Here">
+	</div>
+	<head>
+		<script type="text/javascript" id="MathJax-script" async
+  			src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+		</script>
+		<script>
+  			MathJax = {
+    				tex: {
+      					inlineMath: [['$', '$']]
+    				}
+  			};
+		</script>
+ 		<Title>Sriram Srivatsan CS180 Pages</Title>
+ 		<link rel="stylesheet" href="styling.css">
+		
+		<style>
+		a:link, a:visited {
+		  background-color: #DBDEE1;
+		  color: #17191A;
+		  padding: 14px 25px;
+		  text-align: center;
+		  text-decoration: none;
+		  display: inline-block;
+		}
+		
+		a:hover, a:active {
+		  background-color: white;
+		}
+		</style>
+
+	</head>
+	<body>
+		<h2>CS 180 Writeups</b></h2>
+		<center>
+		<h5 style="color: #DBDEE1">by Sriram Srivatsan</h5>
+        <h5 style="color: #DBDEE1">sriram.srivatsan -at- berkeley.edu</h5>
+		</center>
+		<br>
+		<h3><b>Project 0 - Becoming Friends with Your Camera</b></h3>
+		<p style="color: #DBDEE1; width: 100%">The first step towards knowing every pixel is to become best friends with your camera, especially the one in your smartphone. In particular, the goal of this project is to get you some intuitive understanding of the somewhat subtle relationship between perspective, focal length and zoom, and the center of projection.</p>
+        <a href="./0/index.html"><b>Project 0</b></a>
+        <br><br><br>
+        <a href="./1/index.html"><b>Project 1</b></a>
+        <br><br><br>
+        <a href="./2/index.html"><b>Project 2</b></a>
+        <br><br><br>
+        <a href="./3/index.html"><b>Project 3</b></a>
+        <br><br><br>
+        <a href="./4/index.html"><b>Project 4</b></a>
+        <br><br><br>
+        <a href="./5/index.html"><b>Project 5</b></a>
+        <br><br><br>
+        <a href="./final/index.html"><b>Final Project</b></a>
+	</body>
+	<script>
+		var links = document.body.getElementsByTagName("a")
+		var a = window.location.href.indexOf(".io")
+		var repo_name = window.location.href.substring(a+3)
+		for(var i = 0; i < links.length; i++){
+			var link = links[i]
+			var actual_name = link.href.substring(link.href.indexOf(".io")+4)
+			link.href = repo_name + actual_name
+		}
+	</script>
 </html>
