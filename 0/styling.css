@@ -30,7 +30,8 @@ h2 {
       font-family: Arial, Helvetica, sans-serif;
     }
     p {
-      color:  #FFFFFF;
+      color: #DBDEE1; 
+      width: 100%;
       font-family: Arial, Helvetica, sans-serif;
     }
     
@@ -75,8 +76,29 @@ h2 {
       height: auto;
       padding: 0px;
     }
+    .column5 {
+      float: left;
+      width: 20%;
+      height: auto;
+      padding: 0px;
+    }
+    .column7 {
+      float: left;
+      width: 14.28%;
+      height: auto;
+      padding: 0px;
+    }
     .row::after {
       content: "";
       clear: both;
       display: table;
-    } 
+    }
+    .video-container {
+      margin: auto;
+    }
+    .video-container video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
