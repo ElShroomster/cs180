@@ -1,7 +1,4 @@
 <html>
-	<div class="container">
-  		<img src="" alt="TODO: Add image here">
-	</div>
 	<head>
 		<script type="text/javascript" id="MathJax-script" async
   			src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
@@ -14,13 +11,184 @@
   			};
 		</script>
  		<link rel="stylesheet" href="styling.css">
-		<Title>Homework NUMBER - TODO</Title>
+		<Title>Homework 1 - Images of the Russian Empire</Title>
 	</head>
 	<body>
-        <h2>Homework NUMBER - <b>TODO</b></h2>
-        <center>
-            <h5 style="color: #DBDEE1">by Sriram Srivatsan</h5>
-            <h5 style="color: #DBDEE1">sriram.srivatsan -at- berkeley.edu</h5>
-        </center>
+		<h3>Part 1:<b> Getting Started</b></h3>
+
+		<p>The goal of this project is to overlay the black and white Prokudin-Gorskii images taken in with red, green, and blue filters, creating a final color image. We were given a little bit of starter code, which allowed us to load and save images, however we needed to implement alignment.</p>
+
+		<p>This is what the images look like initially:</p>
+		<div class="row">
+			<div class="column">
+				<img src="./images/cathedral.jpg" alt="0">
+			</div>
+			<div class="column">
+				<img src="./images/monastery.jpg" alt="1">
+			</div>
+			<div class="column">
+			  <img src="./images/tobolsk.jpg" alt="2">
+			</div>
+		</div>
+		<p>Each copy of the image represents a different color channel in gray-scale.</p>
+
+		<h3>Part 2:<b> Basic Alignment</b></h3>
+		
+		<p>First, we were required to implement basic image alignment techniques, namely euclidean distance and normalized cross correlation. To implement these techniques, we had to search a small radius of displacements to find a match with the smallest loss value. Here are the results of my basic alignment algorithm:</p>
+
+		<div class="center">
+			<img src="./images/cathedral_basic.jpg" alt="0">
+		</div>
+
+		<div class="center">
+			<img src="./images/tobolsk_basic.jpg" alt="0">
+		</div>
+		
+		<p>There are a couple small issues with this basic alignment. Firstly, the cross correlation uses reuglar pixel values, and we know that different channels might not have the same brightness or intensity. Additionally, it is possible that we run into errors with scenes with more of one color than another. To fix this first issue, I had the idea of taking a Sobel edge detection filter in order to cross correlate the images. Essentially, I'd take an edge detected filtered image as inputs to the existing euclidean distance functions. Here is the before and after of some images that improved through this edge detection method.</p>
+
+		<div class="row">
+			<div class="column2">
+				<img src="./images/monastery_no_sobel.jpg" alt="before">
+			</div>
+			<div class="column2">
+				<img src="./images/monastery_sobel.jpg" alt="after">
+			</div>
+		</div>
+
+		<p>The image definitely gets more clear, but there is still quite a bit of room for improvement. I also noted that edge cropping also caused issues with the cross correlation, especially since edges are very bright, adding a lot to the norm. Temporarily cropping these before calculating the correlation edges further improved the accuracy:</p>
+
+		<div class="center">
+			<img src="./images/monastery_cropped.jpg" alt="0">
+		</div>
+
+		<p>The second issue is that this alignment takes too long, especially on higher quality images. An ad-hoc solution I used temporarily is to only scan a random subset of the image and compute the cross correlation of this random subset. This rapidly improved scan times, however it also introduced some theoretical noise that I didn't really see through experimentation, however it's quite clear that it exists. Below is a higher quality .tif image that rendered in seconds due to this method.</p>
+
+		<div class="center">
+			<img src="./images/lastochikino_random_subsample.jpg" alt="0">
+		</div>
+
+		<h3>Part 3:<b> Advanced Alignment</b></h3>
+
+		<p>Unfortunately, the previous methods for speed improvement are very ad-hoc. Additionally, they don't help very much with accuracy either. To fix this, first I implemented an image processing pyramid. At a high level, this algorithm scans down-sampled versions of the images for offsets, gradually increasing them. What this does is allow us to scan less individual offsets, think of it as binary search.</p>
+
+		<p>Here are some images that improved using this method. Additionally, all of the images took under 5 seconds to render, a massive improvement from over a minute.</p>
+
+		<div class="row">
+			<div class="column">
+				<img src="./images/pyramid_emir.jpg" alt="0">
+			</div>
+			<div class="column">
+				<img src="./images/pyramid_icon.jpg" alt="1">
+			</div>
+			<div class="column">
+			  <img src="./images/pyramid_lugano.jpg" alt="2">
+			</div>
+		</div>
+
+		<p>This was amazing, however I felt like I was running into a bunch of walls, especially with the methods used for cross correlation and comparison. Using knowledge from CS 184, I knew that you could correlate images using phase through a fast fourier transform. Using this knowledge, I implemented the phase_correlation function by hand to have a much better correlation metric. Additionally, this would be super fast, since we just need to compare the displacement of phase peaks, rather than scan an image through numerous offsets. This also takes care of issues with differing brightness and color values in the different channels.</p>
+
+		<p>Here are a few images using phase correlation:</p>
+
+		<div class="row">
+			<div class="column">
+				<img src="./images/phase_church.jpg" alt="0">
+			</div>
+			<div class="column">
+				<img src="./images/phase_harvesters.jpg" alt="1">
+			</div>
+			<div class="column">
+			  <img src="./images/phase_italil.jpg" alt="2">
+			</div>
+		</div>
+
+		<p>This was by far the fastest and most accurate method of image alignment!</p>
+
+		<h3>Part 4:<b> Results</b></h3>
+
+		<p>These are the final results :)</p>
+
+		<div class="center">
+			<img src="./images/final_cathedral.jpg" alt="0">
+			<p>Red Channel Displacement: (-12, -3)</p>
+			<p>Green Channel Displacement: (-5, -2)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_church.jpg" alt="0">
+			<p>Red Channel Displacement: (-58, -3630)</p>
+<p>Green Channel Displacement: (-25, -3)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_emir.jpg" alt="0">
+			<p>Red Channel Displacement: (-106, -41)</p>
+			<p>Green Channel Displacement: (-49, -24)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_harvesters.jpg" alt="0">
+			<p>Red Channel Displacement: (-118, -11)</p>
+			<p>Green Channel Displacement: (-55, -11)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_icon.jpg" alt="0">
+			<p>Red Channel Displacement: (-88, -23)</p>
+			<p>Green Channel Displacement: (-39, -16)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_italil.jpg" alt="0">
+			<p>Red Channel Displacement: (-77, -36)</p>
+			<p>Green Channel Displacement: (-38, -22)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_lastochikino.jpg" alt="0">
+			<p>Red Channel Displacement: (-76, -3691)</p>
+			<p>Green Channel Displacement: (-3238, -3699)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_lugano.jpg" alt="0">
+			<p>Red Channel Displacement: (-92, -3750)</p>
+			<p>Green Channel Displacement: (-40, -3761)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_melons.jpg" alt="0">
+			<p>Red Channel Displacement: (-176, -14)</p>
+			<p>Green Channel Displacement: (-79, -8)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_monastery.jpg" alt="0">
+			<p>Red Channel Displacement: (-3, -2)</p>
+			<p>Green Channel Displacement: (-338, -2)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_self_portrait.jpg" alt="0">
+			<p>Red Channel Displacement: (-175, -37)</p>
+			<p>Green Channel Displacement: (-77, -29)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_siren.jpg" alt="0">
+			<p>Red Channel Displacement: (-97, -3793)</p>
+			<p>Green Channel Displacement: (-50, -3812)</p>
+		</div>
+		
+		<div class="center">
+			<img src="./images/final_three_generations.jpg" alt="0">
+			<p>Red Channel Displacement: (-111, -7)</p>
+			<p>Green Channel Displacement: (-56, -12)</p>
+		</div>
+
+		<div class="center">
+			<img src="./images/final_tobolsk.jpg" alt="0">
+			<p>Red Channel Displacement: (-6, -3)</p>
+			<p>Green Channel Displacement: (-3, -2)</p>
+		</div>
 	</body>
 </html>
