@@ -34,7 +34,11 @@
 
 		<h3>Part 2:<b> Basic Alignment</b></h3>
 		
-		<p>First, we were required to implement basic image alignment techniques, namely euclidean distance and normalized cross correlation. To implement these techniques, we had to search a small radius of displacements to find a match with the smallest loss value. Here are the results of my basic alignment algorithm:</p>
+		<p>First, we were required to implement basic image alignment techniques, namely euclidean distance and normalized cross correlation. To implement these techniques, we had to search a small radius of displacements to find a match with the smallest loss value.</p>
+			
+		<p>For the purposes of this assignment, I searched a 30 by 30 pixel square of offsets to find the point with the least loss value. This meant, I searched range(-15, 15) in the x-direction and range(-15, 15) in the y-direction. To implement the Euclidean distance metric, I just returned np.linalg.norm(a - b) where a and b are the color channels. For NCC, the formula was a little more complicated, since I had to divide each channel by the norm of each, unroll it into a list instead of a 2-d vector, then compute the dot product.</p> 
+			
+		<p>Here are the results of my basic alignment algorithm:</p>
 
 		<div class="center">
 			<img src="./images/cathedral_basic.jpg" alt="0">
@@ -71,6 +75,8 @@
 
 		<p>Unfortunately, the previous methods for speed improvement are very ad-hoc. Additionally, they don't help very much with accuracy either. To fix this, first I implemented an image processing pyramid. At a high level, this algorithm scans down-sampled versions of the images for offsets, gradually increasing them. What this does is allow us to scan less individual offsets, think of it as binary search.</p>
 
+		<p>The way I implemented the image pyramid was simple. First, I took downsampled the image all the way until it was at most 32x32 in size. Then, I checked an offset of radius 5 to find the overlap with the least norm. This was especially prone to outliers, so I also added a minor edge-detecting method using Sobel filters as a bell and whistle. However, with the baseline implementation, I then upsampled the image by a factor of 2 (also doubling the scanned offset), and checked a 5x5 pixel radius from there, all the way until we hit the maximum size of the image. At each level, I would use NCC to calculate the loss.</p>
+
 		<p>Here are some images that improved using this method. Additionally, all of the images took under 5 seconds to render, a massive improvement from over a minute.</p>
 
 		<div class="row">
@@ -86,6 +92,8 @@
 		</div>
 
 		<p>This was amazing, however I felt like I was running into a bunch of walls, especially with the methods used for cross correlation and comparison. Using knowledge from CS 184, I knew that you could correlate images using phase through a fast fourier transform. Using this knowledge, I implemented the phase_correlation function by hand to have a much better correlation metric. Additionally, this would be super fast, since we just need to compare the displacement of phase peaks, rather than scan an image through numerous offsets. This also takes care of issues with differing brightness and color values in the different channels.</p>
+
+		<p>The calculation of phase correlation was pretty simple. All I had to do was use np.fft.fft2 to convert the images into the fourier domain. Then, I just had to scan for the peaks in both channels, and calculate the offset between the location of these two values, and that is the shift for best phase correlation. I will note that sometimes this causes issues, especially since it's prone to outliers.</p>
 
 		<p>Here are a few images using phase correlation:</p>
 
