@@ -146,10 +146,92 @@ def convolve_two_loops(image, kernel):
 
 		<h3>Part 2.1:<b> Image Sharpening</b></h3>
 
+		<p>In this part, we were tasked with implementing image sharpening using a high pass filter. We were given a low pass filter from before, the gaussian filter, and we had to subtract it from the original image to get the high frequencies of the image. We then implemented sharpening by adding the high frequencies to the original image. This part of the task was quite simple.</p> 
+
+		<p>Here is the workflow of the image sharpening, from the original image, to the low frequencies given by the gaussian filter, to the high frequencies, and finally adding it on to sharpen the image.</p>
+
+		<div class="center">
+			<img src="./images/2.1_sharpen_simple.png" alt="0">
+		</div>
+
+		<p>Additionally, we implemented a one-pass convolution operation to get the high frequencies. This was done by subtracting the gaussian filter from the impulse filter, creating a single filter that can be applied to the image with one convolution operation. Here is the result of this operation, making sure that the results are the same:</p>
+
+		<div class="center">
+			<img src="./images/2.1_sharpen_advanced.png" alt="0">
+		</div>
+
+		<p>Comparing different sharpening strenghts, we can see that the higher the strength, the more edges and noise are shown. The lower the strength, the more the image is blurred.</p>
+
+		<div class="center">
+			<img src="./images/2.1_strengths.png" alt="0">
+		</div>
+
+		<p>Here are some other images being sharpened with strength 25:</p>
+
+		<div class="center">
+			<img src="./images/2.1_other_images.png" alt="0">
+		</div>
+
+		<p>For the image of squidward, I took an already sharp image, blurred it, then sharpened it again. It seems that the result is slightly worse than the original image, but it's still pretty good. I do note that there are a lot of artifacts and noise which you can't see in the original image.</p>
+
 		<h3>Part 2.2:<b> Hybrid Images</b></h3>
 
+		<p>
+		In this part, we created hybrid images by combining the high-frequency content of one image with the low-frequency content of another. First, we loaded and aligned the two images using the provided starter code. To extract the frequency components, we applied Gaussian filters with different sigmas to each image: subtracting a blurred version from the first image to get its high frequencies, and blurring the second image to get its low frequencies. These were then added together and clipped to form the hybrid image. We also implemented optional frequency analysis using the Fourier transform to visualize the frequency content at each stage. The process was parameterized by the cutoff values (sigmas) for the Gaussian filters, allowing us to control the frequency separation and the resulting hybrid effect.
+		</p>
+
+		<p>My favorite result was of course the one of Derek and his cat. Here is the in-depth process of creating the hybrid image. I chose sigmas of 16 and 16 for the cutoff frequencies:</p>
+
+		<div class="center">
+			<img src="./images/2.2_full_walkthrough.png" alt="0">
+		</div>
+
+		<p>Here are three cool hybrid images:</p>
+
+		<div class="center">
+			<img src="./images/2.2_hybrid_image_1.png" alt="0">
+		</div>
+		<div class="center">
+			<img src="./images/2.2_hybrid_image_2.png" alt="0">
+		</div>
+
+		<p>And for a really ambitious test</p>
+
+		<div class="center">
+			<img src="./images/2.2_hybrid_image_3.png" alt="0">
+		</div>
+
 		<h3>Part 2.3:<b> Gaussian and Laplacian Stacks</b></h3>
+		
+		<p>For this part, all we had to do was really simply implement a Gaussian and laplacian stack. Here are the guassian and laplacian stacks of the apple and the orange image. In the next part, we will go over blending the images together, but for now these are very intermediate results.</p>
+
+		<div class="center">
+			<img src="./images/2.3_gauss_lap_stacks.png" alt="0">
+		</div>
 
 		<h3>Part 2.4:<b> Multiresolution Blending</b></h3>
+
+		<p>Now that we've created the laplacian and gaussian stacks, we can blend the images together. By summing the elements of the laplacian stack, we can recreate the original image, however this doesn't really work since if we're merging the images together simply, we get a really sharp line (we might aswell just merge the images without creating the stacks at that rate). To fix this, we have to blend the images at each level, using a mask containing 1s in all the pixels we want from each of the images. This mask is then made into a gaussian stack so that we can blend at each level of the laplacian pyramid. Then, we multiply each level of the gaussian mask stack with the corresponding levels of the laplacian image stack to get each level of the resulting image stack. Then, we can blend the images together by summing them up.</p>
+
+		<p>Here is a visualization of the process below:</p>
+
+		<div class="center">
+			<img src="./images/2.4_oraple.png" alt="0">
+		</div>
+
+		<p>With this, we get very well blended images! I've gone ahead and also demonstrated this result on some irregular masks!</p>
+		
+		<p>For this first image, I wanted to see how different the images could be while still blending them well. After about an hour of effort, I finally found an image that I thought was at the borderline of what can blend well and what can't. Let me know your thoughts!</p>
+		<div class="center">
+			<img src="./images/2.4_blended_1.png" alt="0">
+		</div>
+
+		<p>For the second image, I did something more regular. I tried to make a jackfruit look like it had pineapple on the inside!</p>
+
+		<div class="center">
+			<img src="./images/2.4_blended_2.png" alt="0">
+		</div>
+
+		<p>These results were quite spectacular!</p>
 	</body>
 </html>
