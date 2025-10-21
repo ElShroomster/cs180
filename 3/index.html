@@ -115,5 +115,69 @@
 		<div class="center">
 			<img src="./images/1.4_3.png" alt="0">
 		</div>
+
+		<h3>Part 2.1:<b> Harris Corner Detection</b></h3>
+
+		<p>For automatic feature detection, I implemented Harris corner detection using scikit-image's corner_harris function. The Harris detector identifies points where there are significant intensity changes in multiple directions, making them good candidates for feature points. I used a sigma value of 1 for the Gaussian smoothing and applied edge discarding to avoid selecting corners too close to image boundaries.</p>
+
+		<p>I also implemented Adaptive Non-Maximal Suppression (ANMS) to select the most distinctive corners while ensuring they are well-distributed across the image. ANMS works by sorting corners by their Harris response values and then selecting corners that are sufficiently far apart (minimum distance of 10 pixels) from previously selected corners. This helps avoid clustering of feature points and ensures better coverage of the image.</p>
+
+		<div class="center">
+			<img src="./images/2.1_harris_corners.png" alt="Harris corners detection" style="color: #FF0000;">
+		</div>
+		<div class="center">
+			<img src="./images/2.1_harris_corners_2.png" alt="Harris corners detection" style="color: #FF0000;">
+		</div>
+
+		<h3>Part 2.2:<b> Feature Descriptor Extraction</b></h3>
+
+		<p>For each detected corner, I extracted 8x8 pixel patches as feature descriptors. The key implementation detail is that I extract these patches from a larger 40x40 window around each corner to capture more context. Each patch is then bias/gain normalized by subtracting the mean and dividing by the standard deviation. This normalization makes the descriptors invariant to lighting changes and improves matching performance.</p>
+
+		<p>The descriptor extraction process involves checking that each corner has enough padding around it to extract a valid 8x8 patch, then flattening the patch into a 64-dimensional vector. Only corners with valid descriptors are kept for the matching process.</p>
+
+		<div class="center">
+			<img src="./images/2.2_1.png" alt="Sample descriptor patches" style="color: #FF0000;">
+		</div>
+
+		<div class="center">
+			<img src="./images/2.2_2.png" alt="Sample descriptor patches" style="color: #FF0000;">
+		</div>
+
+		<h3>Part 2.3:<b> Feature Matching</b></h3>
+
+		<p>I implemented feature matching using the Lowe's ratio test approach. For each descriptor in the first image, I find its two nearest neighbors in the second image based on Euclidean distance. A match is considered valid if the ratio of the first nearest neighbor distance to the second nearest neighbor distance is below a threshold (I used 0.7). This helps filter out ambiguous matches and improves the quality of correspondences.</p>
+
+		<p>The matching process involves computing distances between all descriptor pairs, which can be computationally expensive for large numbers of features. I used numpy's efficient vectorized operations to speed up the distance calculations. The final result is a set of matched point pairs that can be used for homography estimation.</p>
+
+		<div class="center">
+			<img src="./images/2.3_1.png" alt="Feature matches between images" style="color: #FF0000;">
+		</div>
+
+		<h3>Part 2.4:<b> RANSAC for Robust Homography and Automatic Mosaic Creation</b></h3>
+
+		<p>To handle outliers in the feature matches, I implemented 4-point RANSAC (Random Sample Consensus) to find a robust homography estimate. RANSAC works by randomly selecting 4 point correspondences, computing a homography from them, and then counting how many other points are consistent with this homography (within a threshold distance, I used 3 pixels). This process is repeated many times (1000 iterations), and the homography with the most inliers is selected.</p>
+
+		<p>The RANSAC implementation includes several important details: I use the same computeH function from Part A to estimate homographies from 4-point sets, I project all points using the candidate homography and measure reprojection errors, and I only accept homographies that have at least 4 inliers. The final homography is recomputed using all inliers to get the best possible estimate.</p>
+
+		<p>Using the RANSAC-computed homography, I created automatic mosaics by adapting the blending code from Part A. The process involves warping the source image to align with the reference image using the robust homography, then applying the same alpha blending technique to create seamless mosaics.</p>
+
+		<p>I compared the results of manual point selection (Part A) with automatic feature detection and matching (Part B). The automatic approach generally produces good results, though the quality depends on having sufficient distinctive features and good feature matches between the images. The RANSAC step is crucial for filtering out bad matches that could otherwise lead to poor homography estimates.</p>
+
+		<div class="center">
+			<img src="./images/2.4_1.png" alt="RANSAC inlier detection" style="color: #FF0000;">
+		</div>
+
+		<div class="center">
+			<img src="./images/2.4_2.png" alt="Manual vs automatic mosaic comparison" style="color: #FF0000;">
+		</div>
+
+		<div class="center">
+			<img src="./images/2.4_3.png" alt="Manual vs automatic mosaic comparison" style="color: #FF0000;">
+		</div>
+
+		<div class="center">
+			<img src="./images/2.4_4.png" alt="Manual vs automatic mosaic comparison" style="color: #FF0000;">
+		</div>
+
 	</body>
 </html>
